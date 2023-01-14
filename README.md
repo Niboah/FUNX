@@ -7,7 +7,7 @@ La entrada y salida del intérprete será en una página web.
 
 ## FUNX
 
-FUNX es un lenguaje orientado a expresiones y funciones. Con FUNX podemos definir y terminar, opcionalmente, con una expresión.
+- FUNX es un lenguaje orientado a expresiones y funciones. Con FUNX podemos definir y terminar, opcionalmente, con una expresión.
 ```
 # Función que recibe dos nombres enteros y retorna la suma de los dos.
 Suma x y
@@ -22,8 +22,29 @@ Suma (2 * 3) 4
 Out: 10 
 ```
 
+- Las funciones empiezan por mayuscula, mientras que las variables empiezan por minusculas.
+
+
+- FUNX tambien dispone de recursividad:
+```
+Fibo n
+{
+    if n < 2 { n }
+    (Fibo n-1) + (Fibo n-2)
+}
+
+Fibo 4
+```
+
+```
+Out: 3
+```
+
+-Todos las variables son locales a cada invocacion de cada procedimiento, y no hace falta declaralas, ya que seran todas de tipo entero, si una variable no se le ha asignado valor, por deferto es un 0.
+
+
 ### Instrucciones
-- Assignacion con `<-`.
+- Assignacion con `<-`, en la assignaciones no retorna nada.
 ```
 a <- a - b
 ```
@@ -49,7 +70,7 @@ while a > 0 { a <- a / 2 }
 
 - Operadores aritméticos ('+', '-', '*', '/', '%').
 
-- Operadores relacionales ('=', '!=', '<', '&gt;', '<=', '&gt;=').
+- Operadores relacionales ('=', '!=', '<', '&gt;', '<=', '&gt;='), si es cierto retorna un 1, de lo contrario 0.
 
 
 ## USO
