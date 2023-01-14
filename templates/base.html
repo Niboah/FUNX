@@ -26,6 +26,9 @@
       <div class="col" style="background-color: #D3D3D3; height:100%;">
          <div style="height: 50%;" >
             <h1 style="color: #FF6347;">Funciones:</h1>
+            <form action="http://localhost:5000/cleanF" method = "POST" id = "formF">
+                <input type = "submit" value = "clean" id="inputF" />
+            </form>
             <div style="height: 80%;overflow:auto">
                <ul>
                {% for key in fun %}
@@ -53,6 +56,9 @@
       <div class="col" style="background-color: #BBBBBB;  height: 100%;">
          <div >
             <h1 style="color: #6DB472;">Resultats:</h1>
+            <form action="http://localhost:5000/cleanO" method = "POST">
+                <input type = "submit" value = "clean" />
+            </form>
             <div style="height: 85%; overflow: auto;">
                <table>
                   {% for key, value in result.items() %}

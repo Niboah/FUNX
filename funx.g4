@@ -1,6 +1,6 @@
 grammar funx;
 
-root: def_fun* expr? EOF;
+root: def_fun* (expr | boolean | instr)? EOF;
 
 def_fun: F args? L body R;
 
@@ -15,7 +15,7 @@ expr: '(' expr ')' #PARENTESIS
     | expr (SUM | RES) expr #SUMRES
     | NUM #NUM
     | VAR #EXPRVAR	
-    | call_fun #CALLFUN	
+    | call_fun #CALLFUN
     ;
 
 call_fun: F call_args?;

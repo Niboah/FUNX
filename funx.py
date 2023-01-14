@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from collections import OrderedDict
 
 import antlr4
@@ -14,8 +14,36 @@ llista_fun = {}
 
 
 @app.route('/')
-def student():
+def root():
     return render_template('base.html', result=output)
+
+
+@app.route('/cleanF', methods=['POST'])
+def cleanF():
+    global llista_fun
+    llista_fun = {}
+    return render_template(
+        "base.html",
+        result=OrderedDict(
+            reversed(
+                list(
+                    output.items()))),
+        fun=llista_fun,
+        exception="")
+
+
+@app.route('/cleanO', methods=['POST'])
+def cleanO():
+    global output
+    output = {}
+    return render_template(
+        "base.html",
+        result=OrderedDict(
+            reversed(
+                list(
+                    output.items()))),
+        fun=llista_fun,
+        exception="")
 
 
 @app.route('/result', methods=['POST', 'GET'])
@@ -73,8 +101,9 @@ class EvalVisitor(funxVisitor):
 
     def function(self, name, fun, args):
         if len(fun[0]) != len(args):
-            raise Exception("Function: " +
+            raise Exception("'" +
                             name +
+                            "'" +
                             " expected " +
                             str(len(fun[0])) +
                             " arg(s), " +
@@ -96,6 +125,8 @@ class EvalVisitor(funxVisitor):
             r = self.visit(l)
             if r is not None:
                 v = r
+        if isinstance(v, bool):
+            return [1 if v else 0, self.func]
         return [v, self.func]
 
     def visitNUM(self, ctx):
@@ -138,10 +169,13 @@ class EvalVisitor(funxVisitor):
         l = list(ctx.getChildren())
         result = self.visit(l[2])
         self.var[l[0].getText()] = result
-        return result
+        # return result
 
     def visitEXPRVAR(self, ctx):
-        return self.var[ctx.VAR().getText()]
+        var = ctx.VAR().getText()
+        if var in self.var:
+            return self.var[var]
+        return 0
 
     def visitBoolean(self, ctx):
         l = list(ctx.getChildren())
@@ -184,27 +218,35 @@ class EvalVisitor(funxVisitor):
         args = self.visit(l[1])
         if args is None:
             args = {}
-        self.func[l[0].getText()] = [args, l[len(l) - 2]]
+        name = l[0].getText()
+        if name in self.func:
+            raise Exception("'" + name + "'" + " already exist")
+        self.func[name] = [args, l[len(l) - 2]]
 
     def visitArgs(self, ctx):
         l = list(ctx.getChildren())
         if len(l) == 1:
             return {l[0].getText(): ""}
         args = self.visit(l[0])
-        args[(l[1].getText())] = ""
+        newArgs = l[1].getText()
+        if newArgs in args:
+            raise Exception("'" + newArgs + "'" + " repeated")
+        args[newArgs] = ""
         return args
 
     def visitCall_args(self, ctx: funxParser.Call_argsContext):
         l = list(ctx.getChildren())
         if len(l) == 1:
-            return {self.visit(l[0])}
+            return [self.visit(l[0])]
         args = self.visit(l[0])
-        args.update(self.visit(l[1]))
+        args.extend(self.visit(l[1]))
         return args
 
     def visitCall_fun(self, ctx):
         l = list(ctx.getChildren())
         name = l[0].getText()
+        if name not in self.func:
+            raise Exception("'" + name + "'" + " not exist")
         fun = self.func[name]
         args = {}
         if len(l) > 1:
