@@ -119,3 +119,6 @@ flask run
 ```
 
 Flask nos dará una ip con un puerto donde estará disponible el intérprete.
+
+# Autor
+Haobin Guo
